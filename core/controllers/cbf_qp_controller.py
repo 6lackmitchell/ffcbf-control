@@ -194,7 +194,7 @@ class CbfQpController(Controller):
             alpha_nom = 1.0
             Q, p = self.objective(np.append(u_nom.flatten(), alpha_nom))
             Au = block_diag(*(na + self.nv) * [self.au])[:-2, :-1]
-            bu = np.append(np.array(na * [self.bu]).flatten(), self.nv * [100, 0])
+            bu = np.append(np.array(na * [self.bu]).flatten(), self.nv * [1e6, 0])
         else:
             Q, p = self.objective(u_nom.flatten())
             Au = block_diag(*(na) * [self.au])
@@ -221,7 +221,7 @@ class CbfQpController(Controller):
             # Get CBF Lie Derivatives
             Lfh = dhdx @ f(ze) + stoch
             Lgh = np.zeros((self.nu * na,))
-            Lgh[self.nu * ego:(ego + 1) * self.nu] = dhdx @ g(ze)  # Only assign ego control
+            Lgh[self.nu * ego:(ego + 1) * self.nu] = dhdx @ g(ze)  # Only assign ego control -- individual constraint
             if cascade:
                 Lgh[self.nu * ego] = 0.0
 
@@ -256,7 +256,7 @@ class CbfQpController(Controller):
                 Lgh[self.nu * ego:(ego + 1) * self.nu] = dhdx[:ns] @ g(ze)
                 if cascade:
                     Lgh[self.nu * ego] = 0.0
-                # Lgh[self.nu * idx:(idx + 1) * self.nu] = dhdx[ns:] @ g(zo)  # Only allow ego to compensate for safety
+                # Lgh[self.nu * idx:(idx + 1) * self.nu] = dhdx[ns:] @ g(zo)  # Only allow ego to compensate for safety -- decentralized
 
                 if h0 < 0:
                     print("{} SAFETY VIOLATION: {:.2f}".format(str(self.__class__).split('.')[-1], -h0))

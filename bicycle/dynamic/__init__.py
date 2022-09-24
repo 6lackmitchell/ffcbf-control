@@ -41,30 +41,20 @@ save_path = '/home/dasc/Documents/MB/datastore/warehouse/test.pkl'
 
 
 # Define controllers
-
-
-def consolidated_cbf_controller(idx: int) -> ConsolidatedCbfController:
-    return ConsolidatedCbfController(
+def decentralized_ffcbf_controller(idx: int) -> CbfQpController:
+    return CbfQpController(
         u_max,
         nAgents,
         objective_accel_and_steering,
         LqrController(idx),
         cbfs_individual,
-        cbfs_pairwise
+        cbfs_pairwise,
     )
 
+rover1 = Agent(0, u0, cbf0, time, step_dynamics, decentralized_ffcbf_controller(0), save_path)
+rover2 = Agent(1, u0, cbf0, time, step_dynamics, decentralized_ffcbf_controller(1), save_path)
+rover3 = Agent(2, u0, cbf0, time, step_dynamics, decentralized_ffcbf_controller(2), save_path)
+rover5 = Agent(3, u0, cbf0, time, step_dynamics, decentralized_ffcbf_controller(3), save_path)
+rover7 = Agent(4, u0, cbf0, time, step_dynamics, decentralized_ffcbf_controller(4), save_path)
 
-# # Define CBF Controlled Agents
-# cbf_controlled_agents = [
-#     Agent(i, u0, cbf0, time, step_dynamics, consolidated_cbf_controller(i), save_path) for i in range(3)
-# ]
-
-# rover3 = Agent(0, u0, cbf0, time, step_dynamics, consolidated_cbf_controller(0), save_path)
-# rover5 = Agent(1, u0, cbf0, time, step_dynamics, consolidated_cbf_controller(1), save_path)
-# rover7 = Agent(2, u0, cbf0, time, step_dynamics, consolidated_cbf_controller(2), save_path)
-
-rover3 = Agent(0, u0, cbf0, time, step_dynamics, LqrController(0), save_path)
-rover5 = Agent(1, u0, cbf0, time, step_dynamics, LqrController(1), save_path)
-rover7 = Agent(2, u0, cbf0, time, step_dynamics, LqrController(2), save_path)
-
-decentralized_agents = [rover3 ,rover5, rover7]
+decentralized_agents = [rover1, rover 2, rover3 ,rover5, rover7]
