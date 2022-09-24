@@ -90,12 +90,11 @@ class MinimalPublisher(Node):
 
             vel = np.clip(vel, -1, 1)
 
+            # Testing / debugging
             if rr > -1:
                 omg = 0.0
                 vel = 0.0
-
             else:
-                
                 print("Omega: {:.2f}!".format(omg))
                 print("Veloc: {:.2f}!".format(vel))
 
