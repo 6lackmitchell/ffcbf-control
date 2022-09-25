@@ -3,7 +3,8 @@ from simulate import simulate
 vehicle = 'bicycle'
 level = 'dynamic'
 # situation = 'intersection'
-situation = 'warehouse'
+# situation = 'warehouse'
+situation = 'dasclab'
 
 if __name__ == "__main__":
     end_time = 40.0

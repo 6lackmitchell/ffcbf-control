@@ -37,7 +37,8 @@ else:
 # Configure parameters
 nAgents = len(z0)
 time = [dt, tf]
-save_path = '/home/dasc/Documents/MB/datastore/warehouse/test.pkl'
+# save_path = '/home/dasc/Documents/MB/datastore/warehouse/test.pkl'
+save_path = 'test.pkl'
 
 
 # Define controllers
@@ -57,4 +58,5 @@ rover3 = Agent(2, u0, cbf0, time, step_dynamics, decentralized_ffcbf_controller(
 rover5 = Agent(3, u0, cbf0, time, step_dynamics, decentralized_ffcbf_controller(3), save_path)
 rover7 = Agent(4, u0, cbf0, time, step_dynamics, decentralized_ffcbf_controller(4), save_path)
 
-decentralized_agents = [rover1, rover 2, rover3 ,rover5, rover7]
+centralized_agents = None
+decentralized_agents = [rover1, rover2, rover3 ,rover5, rover7]
