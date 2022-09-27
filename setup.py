@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'rover_experiments'
+package_name = 'ffcbf_experiments'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'experiment = rover_experiments.experiment:experiment',
+            'experiment = ffcbf_experiments.experiment:experiment',
         ],
     },
 )

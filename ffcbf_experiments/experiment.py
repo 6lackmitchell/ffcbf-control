@@ -32,7 +32,9 @@ def get_robot_states(robots: List[Robot]) -> npt.NDArray:
         vel = robot.get_world_velocity()
         phi = euler_from_quaternion(robot.get_body_quaternion())[2]
 
-        print("pos: {}".format(pos), "vel: {}".format(vel), "phi: {}".format(phi))
+        print("Rover{}: (X,Y): ({:.3f}, {:.3f})".format(rr, pos[0], pos[1]))
+
+        # print("pos: {}".format(pos), "vel: {}".format(vel), "phi: {}".format(phi))
 
         states[rr, :] = np.array([pos[0], pos[1], phi, np.linalg.norm(vel), 0.0])
 
@@ -84,14 +86,10 @@ class MinimalPublisher(Node):
             acc = agent.controller.u[1]
             vel = z[rr, 3] + self.timer_period * acc
 
-            deadband = 0.25
-            if abs(vel) < deadband and acc > 0:
-                vel = deadband * np.sign(vel)
-
-            vel = np.clip(vel, -1, 1)
+            vel = np.clip(vel, -0.75, 0.75)
 
             # Testing / debugging
-            if rr > -1:
+            if rr != 0:
                 omg = 0.0
                 vel = 0.0
             else:
@@ -143,7 +141,8 @@ def _experiment(tf: float,
     ros_init("C-CBF Rover Experiment")
 
     # Create Robots
-    rover_ids = [3, 5, 7]
+    # rover_ids = [2, 3, 5, 6, 7]
+    rover_ids = [3, 6]
     robots = [Robot("rover{}".format(rr), rr) for rr in rover_ids]
 
     # Start ROS Nodes

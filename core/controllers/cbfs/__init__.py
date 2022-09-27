@@ -14,12 +14,12 @@ def linear_class_k(k):
 
 
 # Define linear class k weights
-k_default = 0.01
+k_default = 1.0
 k_collision = 1.0
 
 # Define cbf lists
 cbfs_individual = [
-    Cbf(h_road, dhdx_road, d2hdx2_road, linear_class_k(k_default), h0_road),
+    # Cbf(h_road, dhdx_road, d2hdx2_road, linear_class_k(k_default), h0_road),
     Cbf(h_speed, dhdx_speed, d2hdx2_speed, linear_class_k(k_default), h_speed)
 ]
 cbfs_pairwise = [

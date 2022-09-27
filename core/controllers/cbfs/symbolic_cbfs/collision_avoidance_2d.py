@@ -21,7 +21,7 @@ except ModuleNotFoundError as e:
     raise e
 
 # Defining Physical Params
-R = 0.5
+R = 0.25
 
 # Define new symbols -- necessary for pairwise interactions case
 sso = se.symbols(['{}o'.format(n) for n in ss], real=True)
@@ -60,7 +60,7 @@ dtaustardx = symbolic_cbf_wrapper_multiagent(dtaustardx_symbolic, ss, sso)
 d2taustardx2 = symbolic_cbf_wrapper_multiagent(d2taustardx2_symbolic, ss, sso)
 
 # tau for computing PCA-CBF
-Tmax = 2.0
+Tmax = 10.0
 kh = 1000.0
 tau_star_sym = se.Symbol('tau_star', real=True)
 tau_symbolic = tau_star_sym * ramp(tau_star_sym, kh, 0.0) - (tau_star_sym - Tmax) * ramp(tau_star_sym, kh, Tmax)
@@ -86,7 +86,7 @@ d2hdtau2_predictive_ca = symbolic_cbf_wrapper_multiagent(d2hdtau2_predictive_ca_
 
 # Relaxed Predictive Collision Avoidance
 # relaxation = 0.05
-relaxation = 0.001
+relaxation = 0.5
 
 
 # CBF Callables

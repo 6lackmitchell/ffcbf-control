@@ -4,7 +4,7 @@ from nptyping import NDArray
 from core.controllers.controller import Controller
 from bicycle.dynamic.physical_params import LW, u_max
 from bicycle.dynamic.models import f
-from bicycle.dynamic.warehouse.initial_conditions import *
+from bicycle.dynamic.dasclab.initial_conditions import *
 
 
 class LqrController(Controller):
@@ -40,7 +40,7 @@ class LqrController(Controller):
 
         # Get desired velocity
         speed_d = 0.5
-        vd = speed_d * np.min([1, 1 / 2 * np.linalg.norm([ze[0] - xd, ze[1] - yd])])
+        vd = speed_d * np.min([1, 1 / 4 * np.linalg.norm([ze[0] - xd, ze[1] - yd])])
         th = np.arctan2(yd - ze[1], xd - ze[0])
         vxd = vd * np.cos(th)
         vyd = vd * np.sin(th)
@@ -61,11 +61,12 @@ class LqrController(Controller):
                          [1, 0],
                          [0, 1]])
 
-        # gain = np.min([1.0 / (0.01 + (tracking_error[0])**2 + (tracking_error[1])**2), 1.0])
+        gain = 4 * np.min([1.0 / (0.01 + (tracking_error[0])**2 + (tracking_error[1])**2), 10.0])
         # print(gain)
-        gain = 1
+        # gain = 1
+        # gain = 0.1
         Q = gain * np.eye(4)
-        R = np.eye(2)
+        R = np.diag([1, 0.1])
 
         # Compute LQR control input for double integrator model
         K, _, _ = lqr(A_di, B_di, Q, R)
@@ -75,7 +76,7 @@ class LqrController(Controller):
         S = np.array([[-ze[3] * np.sin(ze[2]) / np.cos(ze[4]) ** 2, np.cos(ze[2]) - np.sin(ze[2]) * np.tan(ze[4])],
                       [ze[3] * np.cos(ze[2]) / np.cos(ze[4]) ** 2, np.sin(ze[2]) + np.cos(ze[2]) * np.tan(ze[4])]])
 
-        if ze[3] > 0.1:
+        if ze[3] > 0.001:
             vec = np.array([mu[0] + f(ze)[1] * f(ze)[2], mu[1] - f(ze)[0] * f(ze)[2]])
             u = np.linalg.inv(S) @ vec
             omega = u[0]
@@ -86,10 +87,19 @@ class LqrController(Controller):
             sign_ar = 1 if (-np.pi / 2 < theta < np.pi / 2) else -1
             ar = np.linalg.norm(mu) * sign_ar
 
-        omega = np.clip(omega, -u_max[0], u_max[0])
         ar = np.clip(ar, -u_max[1], u_max[1])
+        if not self.complete:
+            omega = np.clip(omega, -u_max[0], u_max[0])
+        else:
+            omega = 0.0
+
 
         self.u = np.array([omega, ar])
+
+        if self.ego_id == 0:
+            print("Nominal Control: {}".format(self.u))
+            print("Tracking Error: {}".format(tracking_error))
+            print("Goal: {}".format((xd, yd)))
 
         return self.u, 1, "Optimal"
 

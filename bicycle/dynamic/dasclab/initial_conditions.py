@@ -1,16 +1,16 @@
 import numpy as np
 
 
-rover1_goal = [-2.00, 0.00]
-rover2_goal = [-1.00, -1.00]
-rover3_goal = [1.76, 0.86]
-rover5_goal = [-1.708, 0.885]
-rover7_goal = [2.33, -1.22]
+rover2_goal = [0.71, -1.77]
+rover3_goal = [-2.32, -1.76]
+rover5_goal = [2.14, 0.53]
+rover6_goal = [-1.51, 1.29]
+rover7_goal = [1.01, 3.30]
 
-xg = np.array([rover1_goal[0], rover2_goal[0], rover3_goal[0], rover5_goal[0], rover7_goal[0]])
-yg = np.array([rover1_goal[1], rover2_goal[1], rover3_goal[1], rover5_goal[1], rover7_goal[1]])
+xg = np.array([rover2_goal[0], rover3_goal[0], rover5_goal[0], rover6_goal[0], rover7_goal[0]])
+yg = np.array([rover2_goal[1], rover3_goal[1], rover5_goal[1], rover6_goal[1], rover7_goal[1]])
 
-experimenting = False
+experimenting = True
 if experimenting:
     z0 = np.zeros((5,))
     u0 = np.zeros((2,))

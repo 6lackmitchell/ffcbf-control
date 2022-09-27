@@ -127,6 +127,7 @@ class CbfQpController(Controller):
                 code = sol['code']
                 status = sol['status']
                 self.assign_control(sol, ego)
+                print("Actual Control: ({:.2f}, {:.2f})".format(self.u[0], self.u[1]))
                 if abs(self.u[0]) > 1e-3:
                     pass
             else:
@@ -192,6 +193,7 @@ class CbfQpController(Controller):
         # Au, bu: input constraints
         if self.nv > 0:
             alpha_nom = 1.0
+            # alpha_nom = 1000.0
             Q, p = self.objective(np.append(u_nom.flatten(), alpha_nom))
             Au = block_diag(*(na + self.nv) * [self.au])[:-2, :-1]
             bu = np.append(np.array(na * [self.bu]).flatten(), self.nv * [1e6, 0])
@@ -226,10 +228,15 @@ class CbfQpController(Controller):
                 Lgh[self.nu * ego] = 0.0
 
             # Ai[cc, :], bi[cc] = self.generate_cbf_condition(cbf, h, Lfh, Lgh, cc, adaptive=True)
-            Ai[cc, :], bi[cc] = self.generate_cbf_condition(cbf, h, Lfh, Lgh, cc)
+            Ai[cc, :], bi[cc] = self.generate_cbf_condition(cbf, h, Lfh, Lgh, cc, adaptive=True)
             self.cbf_vals[cc] = h
             if h0 < 0:
                 self.safety = False
+
+            if ego == 0:
+                print("Individual CBF: {:.2f}".format(h))
+                print("A Matrix: {}".format(Ai))
+                print("b vector: {}".format(bi))
 
         # Iterate over pairwise CBF constraints
         for cc, cbf in enumerate(self.cbfs_pairwise):
@@ -265,6 +272,11 @@ class CbfQpController(Controller):
                 update_idx = lci + cc * zr.shape[0] + ii
                 Ai[update_idx, :], bi[update_idx] = self.generate_cbf_condition(cbf, h, Lfh, Lgh, update_idx, adaptive=True)
                 self.cbf_vals[update_idx] = h
+
+                if ego == 0:
+                    print("Pairwise CBF: {:.2f}".format(h))
+                    print("A Matrix: {}".format(Ai))
+                    print("b vector: {}".format(bi))
 
         A = np.vstack([Au, Ai])
         b = np.hstack([bu, bi])
