@@ -5,10 +5,13 @@ from .physical_params import u_max
 # q1 = 0.1 / u_max[1]**2
 q0 = 1.0 / u_max[0]**2
 q1 = 10.0 / u_max[1]**2
-q1 = 10000.0 / u_max[1]**2
+q1 = 10000.0 / u_max[1]**2  # "Tuned"
 
 # q0 = 10.0 / u_max[0]**2
 # q1 = 1.0 / u_max[1]**2
+
+q0 = 1000.0 / u_max[0]**2
+q1 = 1.0 / u_max[1]**2
 q2 = 2 * np.max([q0, q1])
 
 

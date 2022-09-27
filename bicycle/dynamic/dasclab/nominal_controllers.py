@@ -65,8 +65,8 @@ class LqrController(Controller):
         # print(gain)
         # gain = 1
         # gain = 0.1
-        Q = gain * np.eye(4)
-        R = np.diag([1, 0.1])
+        Q = gain * np.diag([10, 10, 2, 2])
+        R = np.diag([1, 1])
 
         # Compute LQR control input for double integrator model
         K, _, _ = lqr(A_di, B_di, Q, R)
@@ -76,14 +76,14 @@ class LqrController(Controller):
         S = np.array([[-ze[3] * np.sin(ze[2]) / np.cos(ze[4]) ** 2, np.cos(ze[2]) - np.sin(ze[2]) * np.tan(ze[4])],
                       [ze[3] * np.cos(ze[2]) / np.cos(ze[4]) ** 2, np.sin(ze[2]) + np.cos(ze[2]) * np.tan(ze[4])]])
 
-        if ze[3] > 0.001:
+        if ze[3] > abs(0.01):
             vec = np.array([mu[0] + f(ze)[1] * f(ze)[2], mu[1] - f(ze)[0] * f(ze)[2]])
             u = np.linalg.inv(S) @ vec
             omega = u[0]
             ar = u[1]
         else:
             omega = 0.0
-            theta = np.arctan2(mu[1], mu[0]) - ze[2]
+            theta = np.arctan2(mu[1], mu[0]) - (ze[2] + ze[4])
             sign_ar = 1 if (-np.pi / 2 < theta < np.pi / 2) else -1
             ar = np.linalg.norm(mu) * sign_ar
 
@@ -97,7 +97,7 @@ class LqrController(Controller):
         self.u = np.array([omega, ar])
 
         if self.ego_id == 0:
-            print("Nominal Control: {}".format(self.u))
+            print("Rover{} Nominal Control: {}".format(self.ego_id, self.u))
             print("Tracking Error: {}".format(tracking_error))
             print("Goal: {}".format((xd, yd)))
 

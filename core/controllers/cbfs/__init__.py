@@ -14,7 +14,7 @@ def linear_class_k(k):
 
 
 # Define linear class k weights
-k_default = 1.0
+k_default = 100.0
 k_collision = 1.0
 
 # Define cbf lists

@@ -9,9 +9,12 @@ from dasc_robots.robot import Robot
 from dasc_robots.ros_functions import *
 from core.agent import Agent
 import rclpy
+import pickle
+from datetime import datetime
 from rclpy.node import Node
 from std_msgs.msg import String
 from transformations import euler_from_quaternion
+from rclpy.executors import MultiThreadedExecutor
 
 
 def get_robot_states(robots: List[Robot]) -> npt.NDArray:
@@ -32,7 +35,7 @@ def get_robot_states(robots: List[Robot]) -> npt.NDArray:
         vel = robot.get_world_velocity()
         phi = euler_from_quaternion(robot.get_body_quaternion())[2]
 
-        print("Rover{}: (X,Y): ({:.3f}, {:.3f})".format(rr, pos[0], pos[1]))
+        # print("Rover{}: (X,Y): ({:.3f}, {:.3f})".format(rr, pos[0], pos[1]))
 
         # print("pos: {}".format(pos), "vel: {}".format(vel), "phi: {}".format(phi))
 
@@ -66,6 +69,7 @@ class MinimalPublisher(Node):
         self.i = 0
         self.z = np.zeros((nTimesteps, len(robots), nStates))
         self.u = np.zeros((nTimesteps, len(robots), nControls))
+        self.h = np.zeros((nTimesteps, len(robots), 1))
 
     def timer_callback_wrapper(self,
                                rr: int,
@@ -89,17 +93,40 @@ class MinimalPublisher(Node):
             vel = np.clip(vel, -0.75, 0.75)
 
             # Testing / debugging
-            if rr != 0:
+            if rr < 0:
                 omg = 0.0
                 vel = 0.0
+            elif self.i < 200:
+                omg = 0.0
+                vel = 0.3
             else:
-                print("Omega: {:.2f}!".format(omg))
-                print("Veloc: {:.2f}!".format(vel))
+                print("Rover{} Omega: {:.2f}!".format(rr, omg))
+                print("Rover{} Veloc: {:.2f}!".format(rr, vel))
 
             cmd = np.array([0, vel, 0, 0, omg])
             robot.command_velocity(cmd)
 
+            # Update Logging
+            self.u[self.i, rr] = np.array([omg, vel])
+            self.h[self.i, rr] = np.min(self.agents[rr].controller.cbf_vals)
+
         return timer_callback
+
+    def save_data(self) -> None:
+        """Saves the logging data. """
+
+        now = datetime.now()
+        current_time = now.strftime("%H%M%S")
+        filename = '/root/px4_ros_com_ros2/logging_data/run_20220927_{}.pkl'.format(current_time)
+        data = {'x': self.z,
+                'u': self.u,
+                'h': self.h,
+                'i': self.i}
+
+        with open(filename, 'wb') as f:
+            pickle.dump(data, f)
+
+        print("SAVED")
 
 
 def _experiment(tf: float,
@@ -141,8 +168,8 @@ def _experiment(tf: float,
     ros_init("C-CBF Rover Experiment")
 
     # Create Robots
-    # rover_ids = [2, 3, 5, 6, 7]
-    rover_ids = [3, 6]
+    rover_ids = [2, 3, 5, 6, 7]
+    # rover_ids = [2, 3, 5]
     robots = [Robot("rover{}".format(rr), rr) for rr in rover_ids]
 
     # Start ROS Nodes
@@ -172,9 +199,17 @@ def _experiment(tf: float,
     
     # Set up publishers
     minimal_publisher = MinimalPublisher(robots, agents)
-    rclpy.spin(minimal_publisher)
+    # executor = MultiThreadedExecutor(num_threads = len(robots))
+    # executor.add_node(minimal_publisher)
+    # executor.spin()
+
+    try:
+        rclpy.spin(minimal_publisher)
+    except KeyboardInterrupt:
+        minimal_publisher.save_data()
 
     # Destroy
+    # executor.shutdown()
     minimal_publisher.destroy_node()
     rclpy.shutdown()
 
