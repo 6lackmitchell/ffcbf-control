@@ -6,7 +6,9 @@ The work in this repository was conducted for our paper submission to the 2023 A
 
 Authors: Mitchell Black, Mrdjan Jankovic, Abhishek Sharma, and Dimitra Panagou
 
-![experiment] https://user-images.githubusercontent.com/67293038/193316399-9486a502-adc3-4269-8498-55c8a6e8f404.mp4
+![experiment] 
+
+https://user-images.githubusercontent.com/67293038/193316399-9486a502-adc3-4269-8498-55c8a6e8f404.mp4
 
 
 
