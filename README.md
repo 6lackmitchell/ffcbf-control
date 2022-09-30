@@ -8,4 +8,6 @@ Authors: Mitchell Black, Mrdjan Jankovic, Abhishek Sharma, and Dimitra Panagou
 
 ![experiment]
 
-See the video oon YouTube at: https://www.youtube.com/watch?v=3JPgKf1qCJM
+See the video on YouTube at: https://www.youtube.com/watch?v=3JPgKf1qCJM
+
+More updates to the README coming soon!
